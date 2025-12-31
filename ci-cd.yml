@@ -1,19 +1,22 @@
-name: CI/CD Docker Pipeline
+name: CI/CD Pipeline with Docker
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository Code
         uses: actions/checkout@v3
 
       - name: Build Docker Image
-        run: docker build -t my-web-app .
+        run: docker build -t ghcr.io/ankitraj326/ci-cd-docker-app:latest .
 
-      - name: Run Docker Container
-        run: docker run my-web-app
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ankitraj326 --password-stdin
+
+      - name: Push Docker Image to GHCR
+        run: docker push ghcr.io/ankitraj326/ci-cd-docker-app:latest
